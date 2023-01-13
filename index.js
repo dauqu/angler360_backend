@@ -29,6 +29,7 @@ app.use(
   })
 );
 
+
 const connectDB = require("./config/database");
 connectDB();
 
@@ -43,6 +44,7 @@ app.use("/api/logout", require("./routes/logout"));
 //user routes
 app.use("/api/products", require("./routes/Product"));
 app.use('/api/category', require('./routes/category'))
+app.use('/api/cart', require('./routes/cart'))
 
 
 //admin handler

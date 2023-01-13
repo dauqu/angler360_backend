@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const User_Schema = require("../models/UserSignup");
 const bcryptjs = require("bcryptjs");
-const UserSignup = require("../models/UserSignup");
 const upload = require("../config/image_upload");
 
 // get user

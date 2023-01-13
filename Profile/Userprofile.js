@@ -29,25 +29,27 @@ router.get("/", async (req, res) => {
 module.exports = router;
 
 // code to update user profile data by id
-router.patch("/:id", async (req, res) => {
+router.patch("/update", async (req, res) => {
+  const token = req.body.token || req.headers["token"] || req.cookies.token;
+
   try {
-    const update_user = await Register_Models.updateOne(
-      { _id: req.params.id },
-      {
-        $set: {
-          name: req.body.name,
-          email: req.body.email,
-          phone_number: req.body.phone_number,
-          address: req.body.address,
-          city: req.body.city,
-          state: req.body.state,
-          zip_code: req.body.zip_code,
-          country: req.body.country,
-        },
-      }
-    );
-    res.json(update_user);
+    // check if havce token 
+    if (token == undefined || token == null || token == "") {
+      res.json({ message: "You are not login", status: "warning" });
+    }
+
+    const have_valid_token = JWT.verify(token, process.env.JWT_SECRET);
+    if(!have_valid_token){
+      res.json({ message: "You are not login", status: "warning" });
+    }
+
+    const id = have_valid_token.id;
+
+    const update_user = await Register_Models.findByIdAndUpdate(id, req.body, {new: true});
+    await update_user.save();
+
+    return res.json({ message: "Profile updated successfully", status: "success", data: update_user });
   } catch (err) {
-    res.json({ message: err });
+    res.json({ message: err, status: "error" });
   }
 });
