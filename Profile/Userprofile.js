@@ -53,3 +53,32 @@ router.patch("/update", async (req, res) => {
     res.json({ message: err, status: "error" });
   }
 });
+
+// code to update user profile data by id
+router.patch("/update/img",upload.single("picture"), async (req, res) => {
+  const token = req.body.token || req.headers["token"] || req.cookies.token;
+
+  try {
+    // check if havce token 
+    if (token == undefined || token == null || token == "") {
+      res.json({ message: "You are not login", status: "warning" });
+    }
+
+    const have_valid_token = JWT.verify(token, process.env.JWT_SECRET);
+    if(!have_valid_token){
+      res.json({ message: "You are not login", status: "warning" });
+    }
+
+    const id = have_valid_token.id;
+    const url = req.protocol + "://" + req.get("host");
+
+    const update_user = await Register_Models.findByIdAndUpdate(id, {
+      image: url + "/medias/" + req.file.filename,
+    }, {new: true});
+    await update_user.save();
+
+    return res.json({ message: "Profile image updated", status: "success", data: update_user });
+  } catch (err) {
+    res.json({ message: err, status: "error" });
+  }
+});
