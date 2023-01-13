@@ -18,7 +18,7 @@ router.get("/my", async (req, res) => {
     const id_from_token = verify.id;
     const allorders = await Order.find({ order_by: id_from_token }).populate([
       {
-        path: "products",
+        path: "products.id",
       },{
         path: "order_by",
       }
@@ -54,9 +54,14 @@ router.post("/", async (req, res) => {
     allcarts.forEach((cart) => {
       total_price += cart.total_price;
     });
+
+    // get all product ids
     const productIds = [];
     allcarts.forEach((cart) => {
-      productIds.push(cart.product_id);
+      let product = {};
+      product.id = cart.product_id;
+      product.quantity = cart.quantity;
+      productIds.push(product);
     });
 
     console.log(productIds);
@@ -70,17 +75,16 @@ router.post("/", async (req, res) => {
     
     order.order_id = order._id;
     
-    if (req.body?.delivery_address)
-    order.delivery_address = req.body.delivery_address;
+    if (req.body?.delivery_address) order.delivery_address = req.body.delivery_address;
     if (req.body?.city) order.city = req.body.city;
     if (req.body?.state) order.state = req.body.state;
     if (req.body?.country) order.country = req.body.country;
     if (req.body?.zip_code) order.zip_code = req.body.zip_code;
     
-    
     const savedOrder = await order.save();
     
-    console.log(savedOrder);
+    // console.log(savedOrder);
+    
     // delete all carts
     await Cart.deleteMany({ user_id: id_from_token });
     res.json({

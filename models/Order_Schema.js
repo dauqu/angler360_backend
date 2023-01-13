@@ -77,18 +77,24 @@ const Order_Schema = new mongoose.Schema(
     },
     products: [
       {
-        type: mongoose.Types.ObjectId,
-        ref: "bait_products",
-      }
+        id: {
+          type: mongoose.Types.ObjectId,
+          ref: "bait_products",
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          default: 1,
+        },
+      },
     ],
     total_price: {
       type: Number,
-      default: 1
+      default: 1,
     },
-   
   },
-  { 
-    timestamps: true 
+  {
+    timestamps: true,
   }
 );
 
