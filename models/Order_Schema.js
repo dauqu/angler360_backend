@@ -5,8 +5,7 @@ const Order_Schema = new mongoose.Schema(
   {
     order_id: {
       type: String,
-      required: true,
-      unique: true,
+      unique: false,
       uppercase: true,
     },
     order_by: {
@@ -51,9 +50,6 @@ const Order_Schema = new mongoose.Schema(
     product_price: {
       type: Number,
     },
-    //   product_image: {
-    //     type: String,
-    //   },
     delivery_address: {
       type: String,
     },
@@ -79,8 +75,21 @@ const Order_Schema = new mongoose.Schema(
     latitude: {
       type: String,
     },
+    products: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "bait_products",
+      }
+    ],
+    total_price: {
+      type: Number,
+      default: 1
+    },
+   
   },
-  { timestamps: true }
+  { 
+    timestamps: true 
+  }
 );
 
 module.exports = mongoose.model("orders", Order_Schema);

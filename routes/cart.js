@@ -22,7 +22,7 @@ router.get('/my', async (req, res) => {
         }).populate('product_id');
         return res.status(200).json({
             message: "carts fetched", 
-            status: "error", 
+            status: "success", 
             carts: myCarts
         });
 

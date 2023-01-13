@@ -57,17 +57,18 @@ router.patch("/update", async (req, res) => {
 
 // code to update user profile data by id
 router.patch("/update/img",upload.single("picture"), async (req, res) => {
+  console.log('updated profile img..');
   const token = req.body.token || req.headers["token"] || req.cookies.token;
 
   try {
     // check if havce token 
     if (token == undefined || token == null || token == "") {
-      res.json({ message: "You are not login", status: "warning" });
+      return res.json({ message: "You are not login", status: "warning" });
     }
 
     const have_valid_token = JWT.verify(token, process.env.JWT_SECRET);
     if(!have_valid_token){
-      res.json({ message: "You are not login", status: "warning" });
+      return res.json({ message: "You are not login", status: "warning" });
     }
 
     const id = have_valid_token.id;
