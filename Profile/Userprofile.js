@@ -4,6 +4,7 @@ const Register_Models = require("../models/UserSignup");
 const JWT = require("jsonwebtoken");
 
 require("dotenv").config();
+const upload = require("../config/image_upload")
 
 router.get("/", async (req, res) => {
   try {
