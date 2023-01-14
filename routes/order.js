@@ -3,6 +3,7 @@ const Order = require("../models/Order_Schema");
 const jwt = require("jsonwebtoken");
 const Cart = require("../models/Cart_Schema");
 const Product = require("../models/Bait_Product");
+const Transaction = require("../models/Transaction");
 
 router.get("/my", async (req, res) => {
   const token = req.headers["token"] || req.body.token || req.cookies.token;
@@ -38,6 +39,8 @@ router.post("/", async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
+    let payment = JSON.parse(req.body.payment);
+
     // get user id from token
     const id_from_token = verify.id;
 
@@ -49,12 +52,25 @@ router.post("/", async (req, res) => {
         .json({ message: "No cart found", status: "error" });
     }
 
-    // get total price of all carts
+
+    // // get total price of all carts
     let total_price = 0;
     allcarts.forEach((cart) => {
       total_price += cart.total_price;
     });
+    
+    // create new transaction 
+    const newTransactions = new Transaction({
+      user: id_from_token,
+      payerId: payment.payerID,
+      status: payment.status,
+      amount: total_price,
+      paypal_id: payment.paymentId,
+      payer: payment.data.payer,
+      transaction: payment.data.transactions,
+    })
 
+    
     // get all product ids
     const productIds = [];
     allcarts.forEach((cart) => {
@@ -63,16 +79,16 @@ router.post("/", async (req, res) => {
       product.quantity = cart.quantity;
       productIds.push(product);
     });
-
-    console.log(productIds);
     
-    // create order
+    // create new order 
     const order = new Order({
       order_by: id_from_token,
       total_price: total_price,
       products: productIds,
+      transaction_id: newTransactions._id
     });
     
+    // order id 
     order.order_id = order._id;
     
     if (req.body?.delivery_address) order.delivery_address = req.body.delivery_address;
@@ -83,7 +99,9 @@ router.post("/", async (req, res) => {
     
     const savedOrder = await order.save();
     
-    // console.log(savedOrder);
+    // save the transaction
+    newTransactions.order_id = savedOrder._id;
+    await newTransactions.save();
     
     // delete all carts
     await Cart.deleteMany({ user_id: id_from_token });

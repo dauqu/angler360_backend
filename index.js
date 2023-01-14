@@ -46,6 +46,7 @@ app.use("/api/products", require("./routes/Product"));
 app.use('/api/category', require('./routes/category'))
 app.use('/api/cart', require('./routes/cart'))
 app.use('/api/order', require('./routes/order'))
+app.use('/api/paypal', require('./routes/paypal'))
 
 
 //admin handler

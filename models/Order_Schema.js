@@ -33,6 +33,10 @@ const Order_Schema = new mongoose.Schema(
       type: String,
       // required: true,
     },
+    transaction_id: {
+      type: mongoose.Types.ObjectId,
+      ref: "Transaction"
+    },
     payment_Status: {
       type: String,
     },
